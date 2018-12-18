@@ -1,0 +1,48 @@
+{
+  "version": "0.1.0",
+  "author": {
+    "name": "Felippi CM",
+    "email": "felippicm@gmail.com"
+  },
+  "contributors": [],
+  "name": "fcm-imgupload-angular",
+  "prettyName": "FcmImguploadAngular",
+  "description": "Experimental multiple image upload to angularjs using ui-cropper and firebase.",
+  "main": "compile/unminified/fcm-imgupload-angular.js",
+  "license": "MIT",
+  "homepage": "https://fcmbr.com/fcm-imgupload-angular/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/felippi/fcm-imgupload-angular/"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "lint": "gulp lint",
+    "dev": "gulp"
+  },
+  "dependencies": {
+    "angular": ">=1.4.0",
+    "ui-cropper": ">=1.0.6"
+  },
+  "devDependencies": {
+    "connect-livereload": "^0.6.0",
+    "eslint": "^4.6.1",
+    "express": "^4.4.5",
+    "gulp": "^3.8.5",
+    "gulp-autoprefixer": "^4.0.0",
+    "gulp-clean-css": "^3.8.0",
+    "gulp-concat-util": "^0.5.5",
+    "gulp-eslint": "^4.0.0",
+    "gulp-header": "^1.0.2",
+    "gulp-livereload": "^2.1.1",
+    "gulp-ng-annotate": "^2.0.0",
+    "gulp-rimraf": "^0.2.1",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "minimist": "^1.2.0",
+    "opn": "^5.1.0",
+    "run-sequence": "^2.1.0",
+    "tiny-lr": "^0.0.7"
+  }
+}
