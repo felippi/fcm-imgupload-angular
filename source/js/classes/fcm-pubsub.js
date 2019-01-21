@@ -20,5 +20,9 @@ angular.module('fcmImguploadAngular').factory('fcmPubSub', [function() {
             });
             return this;
         };
+
+        this.getDirective = function (name) {
+            return events[name];
+        };
     };
 }]);

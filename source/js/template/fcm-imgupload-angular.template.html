@@ -1,0 +1,101 @@
+<div ng-repeat="(imageId, image) in fcmImages.prop">
+    <span >{{image.title}}</span>
+    <div layout="row" layout-align="center center" class="cover-container">
+        <div id="{{image.thumbnail}}" class="drop-shadow" flex-xs="50" flex-gt-xs="40"
+             ng-show="!ctrlFcmImguploadAngular.isEditMode">
+        </div>
+        <div class="cancel-upload" ng-if="image.hasBanner">
+            <md-button ngf-select
+                       ngf-model-invalid="ctrlFcmImguploadAngular.invalidFiles"
+                       ngf-change="ctrlFcmImguploadAngular.selectBanner(imageId, $files, $file)"
+                       accept="image/jpg,image/png,image/bmp,image/*"
+                       md-truncate class="md-raised md-primary">
+                <md-icon>refresh</md-icon>
+                <span translate>Alterar imagem</span>
+            </md-button>
+            <br>
+            <md-button class="md-primary md-raised" ng-click="ctrlFcmImguploadAngular.selectBanner(imageId, false, false)">
+                <md-icon>delete</md-icon>
+                <span translate>Remover</span>
+            </md-button>
+        </div>
+
+        <div id="{{image.blur}}" style="background-image: url({{image.imageCropped}})"></div>
+        <div layout="row" layout-align="center start" flex-xs="100" flex-gt-xs="100" ng-show="!image.hasBanner">
+            <div class="img-holder" flex layout-wrap layout="column">
+                <!--<img ng-src="./images/genero-placeholder.png" id="album-placeholder2"/>-->
+                <div class="bg-change" flex ng-class="{'shown':!image.hasBanner}">
+                    <md-button ngf-select
+                               ngf-model-invalid="ctrlFcmImguploadAngular.invalidFiles"
+                               ngf-change="ctrlFcmImguploadAngular.selectBanner(imageId, $files, $file)"
+                               accept="image/jpg,image/png,image/bmp,image/*"
+                               md-truncate>
+                            <span layout="column">
+                                <md-icon class="material-icon md-48">photo_camera</md-icon>
+                                <span translate>Selecionar a imagem</span>
+                            </span>
+                    </md-button>
+                </div>
+            </div>
+        </div>
+
+        <div layout="row" layout-align="center start" flex ng-show="image.hasBanner">
+            <div layout="row" flex style="height:300px;">
+                <ui-cropper name="{{'inputimage'+imageId}}"
+                            image="image.imageToCrop" result-image="image.imageCropped"
+                            layout="row" layout-align="center center"
+                            result-blob="image.propagandaBanner" area-type="{{image.cropType}}"
+                            area-init-coords="image.areaInitCoords"
+                            area-init-size="image.areaInitSize"
+                            cropject="image.cropperInfo"
+                            area-init-is-relative-to-image="true"
+                            aspect-ratio="image.aspectRatio"
+                            result-image-size="image.imageCroppedSize"
+                            init-max-area="image.initMaxArea"
+                            live-view="blockingObject"
+                            class="drop-shadow"
+                            result-image-quality="image.quality"
+                            result-image-format="image.format"
+                            area-min-size="10"
+
+                            on-change="ctrlFcmImguploadAngular.onBannerCroppChange(imageId, $dataURI)"
+                            on-load-begin="ctrlFcmImguploadAngular.onLoadBegin(imageId)"
+                            on-load-done="ctrlFcmImguploadAngular.onLoadDone(imageId)"
+                            on-load-error="ctrlFcmImguploadAngular.onLoadError(imageId)"
+                            chargement="ctrlFcmImguploadAngular.getLoadingMessage(imageId)"
+                ></ui-cropper>
+            </div>
+        </div>
+    </div>
+    <span class="md-body-1" layout="row" layout-align="end start"
+          translate="IMAGE_SUGGESTED"
+          translate-values="{ altura: image.imageCroppedSize.h,
+               largura: image.imageCroppedSize.w}">
+                </span>
+    <span class="md-body-1" layout="row" layout-align="end start"
+          ng-if="image.hasBanner" translate="IMAGE_INFO"
+          translate-values="{ altura: image.cropperInfo.cropImageHeight, largura: image.cropperInfo.cropImageWidth}">
+        </span>
+    <div layout="row" layout-align="end center" flex layout-wrap class="margin-top-bottom-15">
+        <div ng-messages="companyForm.banner_upload.$error" role="alert">
+            <div ng-message="minHeight">
+                <md-icon >error</md-icon>
+                <span translate class="md-body-1" >
+                         A altura da imagem é menor do que a permitida. Verifique.
+                    </span>
+            </div>
+            <div ng-message="minWidth">
+                <md-icon >error</md-icon>
+                <span translate class="md-body-1" >
+                         A largura da imagem é menor do que a permitida. Verifique.
+                    </span>
+            </div>
+            <div ng-message="maxSize">
+                <md-icon >error</md-icon>
+                <span translate class="md-body-1" >
+                         O tamanho da image é maior do que o permitido. Verifique
+                    </span>
+            </div>
+        </div>
+    </div>
+</div>

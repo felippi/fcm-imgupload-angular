@@ -4,14 +4,38 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
     return {
         restrict: 'E',
         scope: {
-            options: '=' /* options */
+            options: '=', /* options */
+            progressPercent: '=?',
+
+            //   uploadImages: '&',
+
+            onImageDelete: '&',
+            onImageUpload: '&',
+
+            reveseCall: '&?'
 
         },
-        template: '<canvas></canvas>',
-        controller: ['$scope', function ($scope) {
+        // template: '<canvas></canvas>',
+        templateUrl: './template/fcm-imgupload-angular.template.html',
+        controller: ['$scope', '$attrs', function ($scope, $attrs) {
             $scope.events = new FcmPubSub();
+            var name = $attrs.name;
+
+            this.updateMap = function() {
+                console.log('Hello FCM');
+            };
+
+            $scope.events.on(name, function(args){
+                console.log('Funcionou', args);
+            });
+
+            $scope.$on('destroy', function() {
+                // $scope.events.deregisterDirective(name);
+            });
+
+
         }],
-        link: function (scope, element) {
+        link: function (scope, element, attrs, ctrl) {
             // Init Events Manager
             var events = scope.events;
             var options = scope.options;
@@ -19,6 +43,23 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
             if(!_) {
                 console.error('Need lodash');
             }
+
+            this.isEditMode = true;
+            this.invalidFiles = '';
+
+            scope.ctrlFcmImguploadAngular = this;
+
+            console.log('element', element);
+            console.log('cancel-upload', element.querySelector('.cancel-upload'));
+
+
+            // reverse call
+            // uploadImages
+
+
+
+
+
 
             this.default = {
                 imageToCrop: null,
@@ -49,7 +90,7 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
                 databaseIndex: 'img'
             };
 
-            this.progressPercent =0;
+            scope.progressPercent =0;
             this.progressList = {};
 
             this.prop = [];
@@ -168,6 +209,7 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
                     this.prop[index].croppInitialized = true;
                 }
             };
+
             this.onLoadBegin = function (e, index) {
                 index = index || 0;
                 this.prop[index].onloadUiCropper = true;
@@ -215,17 +257,18 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
                 }, 0);
                 var size = _.size(this.progressList);
                 $timeout(function() {
-                    that.progressPercent = totalProgress/size;
+                    scope.progressPercent = totalProgress/size;
                 });
 
             };
 
             this.progressReset = function() {
-                this.progressPercent = 0;
+                scope.progressPercent = 0;
                 this.progressList = {};
             };
 
-            this.uploadImages = function (imgObj, removeRef, uploadRef) {
+            this.uploadImages = function (imgObj) {
+                console.log('uploadImg', imgObj);
                 var that = this;
                 this.progressReset();
                 return new Promise(function(resolve, reject){
@@ -233,8 +276,8 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
                     that.prop.map(function(value, index) {
 
                         if(value.removerImagem) {
-                            promisesImg.push(removeRef(value.databaseIndex));
-                            promisesImg.push(removeRef(value.databaseIndex+'_original'));
+                            promisesImg.push(scope.onImageDelete(value.databaseIndex));
+                            promisesImg.push(escope.onImageDelete(value.databaseIndex+'_original'));
                         }
 
                         if ((value.bannerCroppedChanged || value.bannerChanged) && !value.removerImagem) {
@@ -244,7 +287,7 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
                             value.bannerCroppedChanged = false;
 
                             promisesImg.push(new Promise(function(resolve, reject){
-                                return uploadRef(value.databaseIndex, value.propagandaBanner, function(progress){
+                                return scope.onImageUpload(value.databaseIndex, value.propagandaBanner, function(progress){
                                     that.progressUpdate(value.databaseIndex, progress);
                                     // console.log('progress '+value.databaseIndex+': ', progress);
                                 }).then(function(url){
@@ -273,7 +316,7 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
 
                             promisesImg.push(new Promise(function(resolve, reject){
                                 banner.toBlob(function (blob) {
-                                    uploadRef(value.databaseIndex+'_original', blob, function(progress){
+                                    scope.onImageUpload(value.databaseIndex+'_original', blob, function(progress){
                                         that.progressUpdate(value.databaseIndex+'_original', progress);
                                         // console.log('progress '+value.databaseIndex+': ', progress);
                                     }).then(function(url){
@@ -293,3 +336,66 @@ angular.module('fcmImguploadAngular').directive('fcmImguploadAngular', ['$timeou
         }
     };
 }]);
+
+
+
+/**
+ * @memberof NgMap
+ * @function setDefaultOptions
+ * @param {Hash} options
+ * @example
+ *  app.config(function(NgMapProvider) {
+     *    NgMapProvider.setDefaultOptions({
+     *      marker: {
+     *        optimized: false
+     *      }
+     *    });
+     *  });
+ */
+
+// Ex provider angular
+/*
+angular.module('ngMap').provider('NgMap', function() {
+    var defaultOptions = {};
+
+
+
+    this.setDefaultOptions = function(options) {
+        defaultOptions = options;
+    };
+
+    var NgMap = function(
+        _$window_, _$document_, _$q_,
+        _NavigatorGeolocation_, _Attr2MapOptions_,
+        _GeoCoder_, _camelCaseFilter_, _NgMapPool_
+    ) {
+        $window = _$window_;
+        $document = _$document_[0];
+        $q = _$q_;
+        NavigatorGeolocation = _NavigatorGeolocation_;
+        Attr2MapOptions = _Attr2MapOptions_;
+        GeoCoder = _GeoCoder_;
+        camelCaseFilter = _camelCaseFilter_;
+        NgMapPool = _NgMapPool_;
+
+        return {
+            defaultOptions: defaultOptions,
+            addMap: addMap,
+            deleteMap: deleteMap,
+            getMap: getMap,
+            initMap: initMap,
+            setStyle: setStyle,
+            getGeoLocation: getGeoLocation,
+            observeAndSet: observeAndSet
+        };
+    };
+    NgMap.$inject = [
+        '$window', '$document', '$q',
+        'NavigatorGeolocation', 'Attr2MapOptions',
+        'GeoCoder', 'camelCaseFilter', 'NgMapPool'
+    ];
+
+    this.$get = NgMap;
+});
+
+*/
